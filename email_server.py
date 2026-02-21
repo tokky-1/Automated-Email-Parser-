@@ -20,7 +20,7 @@ def authenticate():
             creds.refresh(Request()) # refreshes
         else:
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0) # opens the browser login
+            creds = flow.run_local_server(port=0, open_browser=True) # opens the browser login
 
         with open("token.json", "w") as token:
             token.write(creds.to_json()) # saves the credentials

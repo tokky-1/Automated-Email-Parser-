@@ -25,11 +25,12 @@ def parse_email(raw_email):
         "sender":  sender,
         "date":    date,
         "body":    body,
+        "labels":  raw_email.get("labelIds", []),
     }
-
-if __name__ == "__main__":
-    from email_server import fetch_emails
+#for test purposes only
+# if __name__ == "__main__":
+#     from email_server import fetch_emails
     
-    raw_emails = fetch_emails()
-    parsed = parse_email(raw_emails[0])
-    print(parsed)
+#     raw_emails = fetch_emails()
+#     parsed = parse_email(raw_emails[0])
+#     print(parsed)
