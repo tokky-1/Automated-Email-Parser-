@@ -6,7 +6,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 import os
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.readonly",  "https://www.googleapis.com/auth/gmail.send",]
 
 #gets and saves user credentials
 def authenticate():
@@ -26,23 +26,31 @@ def authenticate():
             token.write(creds.to_json()) # saves the credentials
 
     return creds
-
-def fetch_emails():
+def fetch_emails(max_results: int = 150):
     creds = authenticate()
-    #creates api client
     service = build("gmail", "v1", credentials=creds)
 
-    # get the ids of the first 150 emails
-    results = service.users().messages().list(
-        userId="me",
-        maxResults=150
-    ).execute()
-    messages = results.get("messages", [])
-    if not messages:
-        print("No emails found.")
-        return []
+    messages = []
+    next_page_token = None
 
-    #prints out the emails in details
+    while len(messages) < max_results:
+        remaining = max_results - len(messages)
+        batch_size = min(100, remaining)
+
+        params = {
+            "userId": "me",
+            "maxResults": batch_size,
+        }
+        if next_page_token:
+            params["pageToken"] = next_page_token
+
+        results = service.users().messages().list(**params).execute()
+        messages.extend(results.get("messages", []))
+        next_page_token = results.get("nextPageToken")
+
+        if not next_page_token:
+            break
+
     emails = []
     for msg in messages:
         detail = service.users().messages().get(
