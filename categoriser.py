@@ -11,6 +11,20 @@ CATEGORIES = {
     "UNCATEGORIZED":        [],
 }
 
+# Emails sent from any of these domains will be classified as WORK/PROFESSIONAL
+WORK_DOMAINS = [
+    "babcock.edu.ng",
+    "gov.ng",
+    "edu.ng",
+    # add more domains here as needed
+]
+WORK_KEYWORDS = [
+    "invoice", "meeting", "agenda", "proposal", "contract",
+    "project", "deadline", "report", "schedule", "follow up",
+    "follow-up", "action required", "review", "approval",
+    "onboarding", "interview", "offer letter", "internship", "siwes",
+]
+
 #Gmail's own labels to categorizes emails
 def categorize_email(parsed_email):    
     ## matches Gmail's label names to category names
@@ -27,4 +41,14 @@ def categorize_email(parsed_email):
             if label in label_map:
                 return label_map[label]
 
+    # categorieses email into work, by first checking the domain, then checking the content       
+    sender = parsed_email.get("sender", "").lower()
+    for domain in WORK_DOMAINS:
+        if domain in sender:
+            return "WORK/PROFESSIONAL"
+
+    subject = parsed_email.get("subject", "").lower()
+    for keyword in WORK_KEYWORDS:
+        if keyword in subject:
+            return "WORK/PROFESSIONAL"
     return "UNCATEGORIZED"
