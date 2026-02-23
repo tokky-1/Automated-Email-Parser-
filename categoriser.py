@@ -17,7 +17,7 @@ def categorize_email(parsed_email):
     label_map = {
             "CATEGORY_PROMOTIONS": "PROMOTIONS/MARKETING",
             "CATEGORY_SOCIAL":     "SOCIALS",
-            "CATEGORY_UPDATES":    "SOCIALS",
+            "CATEGORY_UPDATES":    "UPDATES",
             "CATEGORY_FORUMS":     "SOCIALS",
             "SPAM":                "SPAM",
         }
