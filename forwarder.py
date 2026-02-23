@@ -7,11 +7,12 @@ from email.mime.multipart import MIMEMultipart
 from email_server import authenticate
 from googleapiclient.discovery import build
 
-
+#get credentials and build client
 def get_service():
     creds = authenticate()
     return build("gmail", "v1", credentials=creds)
 
+# Checks whether a single email satisfies a single rule.
 def matches_rule(email: dict, rule: dict) -> bool:
     sender  = email.get("sender", "").lower()
     subject = email.get("subject", "").lower()
@@ -32,13 +33,18 @@ def matches_rule(email: dict, rule: dict) -> bool:
 
     return False
 
-def forward_email(service, email: dict, forward_to: str) -> bool:
+def forward_email(service, email: dict, forward_to: str, personal_message: str = "") -> bool:
     try:
         msg = MIMEMultipart()
         msg["To"]      = forward_to
         msg["Subject"] = f"Fwd: {email.get('subject', '')}"
 
+        personal_block = ""
+        if personal_message.strip():
+            personal_block = f"{personal_message}\n\n"
+
         body = (
+            f"{personal_block}"
             f"---------- Forwarded message ----------\n"
             f"From: {email.get('sender', '')}\n"
             f"Date: {email.get('date', '')}\n"
@@ -65,7 +71,7 @@ def apply_rules(emails: list, rules: list) -> list:
     for email in emails:
         for rule in rules:
             if matches_rule(email, rule):
-                success = forward_email(service, email, rule["forward_to"])
+                success = forward_email(service, email, rule["forward_to"], rule.get("personal_message", ""))
                 log.append({
                     "subject":    email.get("subject"),
                     "sender":     email.get("sender"),

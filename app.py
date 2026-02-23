@@ -128,6 +128,11 @@ if "df" in st.session_state:
     with col3:
         forward_to = st.text_input("Forward to", placeholder="friend@gmail.com")
 
+    personal_message = st.text_area(
+    "Personal message (optional)",
+    placeholder="Add a note to include at the top of the forwarded email...",
+    height=100)
+
     if st.button("▶ Apply Rule", type="primary"):
         if not rule_value or not forward_to:
             st.error("Please fill in both match value and forward to fields.")
@@ -138,6 +143,7 @@ if "df" in st.session_state:
                 "type":       rule_type,
                 "value":      rule_value,
                 "forward_to": forward_to,
+                "personal_message": personal_message,
             }]
             with st.spinner("Applying rule..."):
                 log = apply_rules(st.session_state["df"].to_dict(orient="records"), rule)
