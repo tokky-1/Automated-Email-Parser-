@@ -6,7 +6,7 @@ def parse_email(raw_email):
     #holds the main content of the email
     payload = raw_email["payload"]
 
-    #holds sender,reciever,date
+    #extract sender,reciever,date
     headers = payload["headers"]
     subject = next((h["value"] for h in headers if h["name"] == "Subject"), "No Subject")
     sender  = next((h["value"] for h in headers if h["name"] == "From"), "Unknown")

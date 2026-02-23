@@ -1,11 +1,11 @@
-# API integration
-#Purpose: Handles connection to email (gmail API)
+#Purpose: Handles authentication and email fetching via the Gmail API.
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 import os
 
+# define exactly what permissions your app is requesting from the user's email
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly",  "https://www.googleapis.com/auth/gmail.send",]
 
 #gets and saves user credentials
@@ -17,7 +17,7 @@ def authenticate():
     # checks for none or if it has expired
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request()) # refreshes
+            creds.refresh(Request()) # refreshes token quietly
         else:
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0, open_browser=True) # opens the browser login
@@ -30,8 +30,9 @@ def fetch_emails(max_results: int = 150):
     creds = authenticate()
     service = build("gmail", "v1", credentials=creds)
 
-    messages = []
-    next_page_token = None
+    # a list of email IDs 
+    messages = [] #list containing ids
+    next_page_token = None #none means start from 1st page   #acts like a page number
 
     while len(messages) < max_results:
         remaining = max_results - len(messages)
@@ -51,6 +52,7 @@ def fetch_emails(max_results: int = 150):
         if not next_page_token:
             break
 
+    #get full content of email
     emails = []
     for msg in messages:
         detail = service.users().messages().get(

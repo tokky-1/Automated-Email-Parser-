@@ -6,6 +6,7 @@ CATEGORIES = {
     "WORK/PROFESSIONAL":    [],
     "PROMOTIONS/MARKETING": [],
     "SOCIALS":              [],
+    "UPDATES":              [],
     "SPAM":                 [],
     "UNCATEGORIZED":        [],
 }
